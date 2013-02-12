@@ -19,7 +19,7 @@ def trac_user_email(user):
         email = email[0]
     return email
 
-def cursor(dbfile="numpy-trac.db", c=[]):
+def cursor(dbfile="trac.db", c=[]):
     if len(c) == 0:
         conn = sqlite3.connect(dbfile)
         c.append(conn.cursor())
