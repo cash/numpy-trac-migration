@@ -20,6 +20,8 @@ if __name__ == '__main__':
     for c, n in cn:
         if c > 1:
             tracemail = util.trac_user_email(n)
+            if tracemail is None:
+                continue
             ghuser = util.trac_email_to_github(tracemail)
             if ghuser is None and '@' in tracemail:
                 try:
