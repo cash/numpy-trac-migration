@@ -75,7 +75,7 @@ class issue(object):
                           ""])
 
     def trac_url(self):
-        return "http://projects.scipy.org/numpy/ticket/" + str(self.trac.id)
+        return "http://trac.elgg.org/ticket/" + str(self.trac.id)
 
     def gh_set_comments(self):
         self.github.comments = [t2g_markup(c) for c in self.get_trac_comments()]
@@ -99,7 +99,7 @@ class issue(object):
                     yield "Title changed from `%s` to `%s` by %s on %s" % (oldvalue, newvalue, util.mention_trac_user(author), _t(time))
             elif len(event) == 4:
                 time, author, description, filename = event
-                url = "http://projects.scipy.org/numpy/attachment/ticket/%d/%s" % (self.trac.id, filename)
+                url = "http://trac.elgg.org/attachment/ticket/%d/%s" % (self.trac.id, filename)
                 body = "Attachment added by %s on %s: [%s](%s)" % \
                     (util.mention_trac_user(author),
                      _t(time),
@@ -233,7 +233,7 @@ def t2g_inline_code(s):
     # italic is _text_
     s = re.sub("''(.*?)''", '_\\1_', s)
     # not all git hashes are recognized as such without markup
-    s = re.sub("commit:([a-f0-9]*)", '[\\1](http://github.com/numpy/numpy/commit/\\1)', s)
+    s = re.sub("commit:([a-f0-9]*)", '[\\1](https://github.com/Elgg/Elgg/commit/\\1)', s)
     return s
 
 def t2g_markup(s):
