@@ -234,6 +234,8 @@ def t2g_inline_code(s):
     s = re.sub("''(.*?)''", '_\\1_', s)
     # not all git hashes are recognized as such without markup
     s = re.sub("commit:([a-f0-9]*)", '[\\1](https://github.com/Elgg/Elgg/commit/\\1)', s)
+    # links [http://elgg.org/ Elgg]
+    s = re.sub(r'\[([\w\.\:/\?=&!#]+)[ ]+([\w]+)\]', r'[\2](\1)', s)
     return s
 
 def t2g_markup(s):
