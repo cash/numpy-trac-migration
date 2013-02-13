@@ -31,7 +31,8 @@ def mention_trac_user(user):
     ghuser = trac_user_to_github(user)
     if ghuser:
         all_users.append("@" + ghuser)
-        return "@" + ghuser
+	return ghuser
+        #return "@" + ghuser
     if user in ['', 'somebody', 'anonymous', None]:
         return 'unknown'
     # anonymize emails

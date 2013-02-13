@@ -8,7 +8,7 @@ def gh_repo(r=[]):
         p = getpass.getpass("Password: ")
         g = github.Github(u, p, timeout=100)
         del p
-        r += [g.get_user('numpy').get_repo("numpy")]
+        r += [g.get_user('elgg-gitbot').get_repo("test")]
     return r[0]
 
 def lookup(issue):
@@ -28,9 +28,9 @@ def find_milestone(trac_milestone, milestones=[]):
         milestones += [m for m in gh_repo().get_milestones('open')]
         milestones += [m for m in gh_repo().get_milestones('closed')]
     # some milestones were renamed between trac and github before migrating.
-    trac_milestone = {'1.7.0': 'NumPy 1.7',
-                      '1.8.0': 'NumPy 1.8',
-                      '2.0.0': 'NumPy 2.0'}.get(trac_milestone, trac_milestone)
+    #trac_milestone = {'1.7.0': 'NumPy 1.7',
+    #                  '1.8.0': 'NumPy 1.8',
+    #                  '2.0.0': 'NumPy 2.0'}.get(trac_milestone, trac_milestone)
     for m in milestones:
         if m.title == trac_milestone:
             return m
