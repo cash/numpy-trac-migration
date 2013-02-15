@@ -60,19 +60,24 @@ class issue(object):
         pass
 
     def gh_set_title(self):
-        self.github.title = "%s (Trac #%d)" % (self.trac.summary, self.trac.id)
+        if self.convert_component() == 'plugins':
+            self.github.title = "%s: %s (Trac #%d)" % (self.get_output_component(), self.trac.summary, self.trac.id)
+        else:
+            self.github.title = "%s (Trac #%d)" % (self.trac.summary, self.trac.id)
 
     def gh_set_body(self):
         self.github.body = self.body_header() + t2g_markup(self.trac.description)
 
     def body_header(self):
-        return "\n".join(["_Original ticket %s " % self.trac_url() +
+        header = "\n".join(["_Original ticket %s " % self.trac_url() +
                           "on %s by %s, assigned to %s._" % \
                               (_t(self.trac.time),
                                util.mention_trac_user(self.trac.reporter),
                                util.mention_trac_user(self.trac.owner)),
                           "",
                           ""])
+        header = header + "Elgg version: %s\n\n" % self.trac.version
+        return header
 
     def trac_url(self):
         return "http://trac.elgg.org/ticket/" + str(self.trac.id)
@@ -118,12 +123,66 @@ class issue(object):
         self.github.state = 'closed' if self.trac.status == 'closed' else 'open'
 
     def gh_set_labels(self):
-        labels = ["priority: " + self.trac.priority,
-                  self.trac.type.title(),  # Upcase first letters
-                  ]
+        labels = []
+        ticket_priority = self.get_priority()
+        if ticket_priority != None:
+            labels.append(ticket_priority)
+        ticket_type = self.get_ticket_type()
+        if ticket_type != None:
+            labels.append(ticket_type)
         if self.trac.component != 'component1': # Trac default
-            labels.append('component: ' + self.trac.component)
+            labels.append('comp: ' + self.convert_component())
         self.github.labels = [ghissues.find_label(l) for l in labels]
+
+    def get_priority(self):
+        if self.trac.priority == 'critical':
+            return 'critical'
+        if self.trac.priority == 'high':
+            return 'important'
+        else:
+            return None
+
+
+    def get_ticket_type(self):
+        if self.trac.resolution == 'wontfix':
+            return 'wontfix'
+        elif self.trac.resolution == 'worksforme':
+            return 'worksforme'
+        elif self.trac.resolution == 'duplicate':
+            return 'duplicate'
+        elif self.trac.resolution == 'invalid':
+            return 'invalid'
+        elif self.trac.type == 'Enhancement':
+            return 'enhancement'
+        elif self.trac.type == 'Feature Request':
+            return 'enhancement'
+        else:
+            return None
+
+
+    def get_output_component(self):
+        return self.trac.component.lower()
+
+    def convert_component(self):
+	if self.trac.component == 'Core':
+            return 'engine'
+        elif self.trac.component == 'JavaScript':
+            return 'javascript'
+        elif self.trac.component == 'Community Site':
+            return 'community'
+        elif self.trac.component == 'Elgg.org Site':
+            return 'elgg.org'
+        elif self.trac.component == 'Documentation':
+            return 'docs'
+        elif self.trac.component == 'UI/UX':
+            return 'ui'
+        elif self.trac.component == 'Installation':
+            return 'install'
+        elif self.trac.component == 'Plugin Repository':
+            return 'plugin repo'
+        else:
+            return 'plugins'
+
 
     def gh_set_milestone(self):
         self.github.milestone = ghissues.find_milestone(self.trac.milestone)
@@ -236,6 +295,10 @@ def t2g_inline_code(s):
     s = re.sub("commit:([a-f0-9]*)", '[\\1](https://github.com/Elgg/Elgg/commit/\\1)', s)
     # links [http://elgg.org/ Elgg]
     s = re.sub(r'\[([\w\.\:/\?=&!#]+)[ ]+([\w]+)\]', r'[\2](\1)', s)
+    # remove @username
+    s = re.sub(r'@(\w+)', r'\1', s);
+    # remove #<id>
+    s = re.sub(r'#([0-9]+)', r'(Trac Ticket \1)', s);
     return s
 
 def t2g_markup(s):
