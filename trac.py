@@ -5,9 +5,8 @@ fields = "id,type,time,component,severity,priority,owner,reporter,cc,version,mil
 
 def issues(dbfile):
     c = util.cursor(dbfile)
-    c.execute("SELECT id FROM ticket")
+    c.execute("SELECT id FROM ticket ORDER BY id ASC")
     for (id,) in c.fetchall():
-        print id
         c.execute("SELECT %s FROM ticket where id=%d" % \
                              (fields, id))
         vals = c.fetchone()
@@ -26,9 +25,9 @@ def single_issue(dbfile, id):
 
 def issue_changes_and_attachments(id):
     c = util.cursor()
-    c.execute("SELECT time, author, field, oldvalue, newvalue FROM ticket_change WHERE ticket= '%s'" %  (id,))
+    c.execute("SELECT time, author, field, oldvalue, newvalue FROM ticket_change WHERE ticket= '%s' ORDER BY time ASC" %  (id,))
     for vals in c.fetchall():
         yield vals
-    c.execute("SELECT time, author, description, filename FROM attachment WHERE id='%s'" % (id,))
+    c.execute("SELECT time, author, description, filename FROM attachment WHERE id='%s' ORDER BY time ASC" % (id,))
     for vals in c.fetchall():
         yield vals
