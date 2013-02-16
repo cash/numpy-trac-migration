@@ -1,4 +1,4 @@
-import sqlite3
+import psycopg2
 import re
 
 def trac_email_to_github(email, email_map={}):
@@ -21,7 +21,7 @@ def trac_user_email(user):
 
 def cursor(dbfile="trac.db", c=[]):
     if len(c) == 0:
-        conn = sqlite3.connect(dbfile)
+        conn = psycopg2.connect("")
         c.append(conn.cursor())
     return c[0]
 
