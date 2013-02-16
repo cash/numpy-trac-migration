@@ -164,7 +164,9 @@ class issue(object):
         return self.trac.component.lower()
 
     def convert_component(self):
-	if self.trac.component == 'Core':
+        if self.trac.component == 'Core':
+            return 'engine'
+        elif self.trac.component == 'API':
             return 'engine'
         elif self.trac.component == 'JavaScript':
             return 'javascript'
@@ -203,6 +205,7 @@ class issue(object):
                          newvalue)
 
     def in_github(self, existing_issues={}):
+        return False
         if len(existing_issues) == 0:
             repo = ghissues.gh_repo()
             for i in repo.get_issues(state='open'):
@@ -298,7 +301,7 @@ def t2g_inline_code(s):
     # remove @username
     s = re.sub(r'@(\w+)', r'\1', s);
     # remove #<id>
-    s = re.sub(r'#([0-9]+)', r'(Trac Ticket \1)', s);
+    #s = re.sub(r'#([0-9]+)', r'(Trac Ticket \1)', s);
     return s
 
 def t2g_markup(s):
